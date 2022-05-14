@@ -24,6 +24,9 @@ check_multiboot:
     cmp eax, 0x36d76289
     jne .no_multiboot
     ret
+.no_multiboot:
+    mov al, "M"
+    jmp error
 
 check_cpuid:    ; invert the 21 bit of the flags to check if cpu supports cpuid
     pushfd      ; push the flags into stack to get unmodified flags back later
@@ -39,6 +42,11 @@ check_cpuid:    ; invert the 21 bit of the flags to check if cpu supports cpuid
     je .no_cpuid
     ret
 
+.no_cpuid:
+    mov al, "C"
+    jmp error
+
+
 check_long_mode:
     ; checkif cpuid supports extended proc info
     mov eax, 0x80000000
@@ -51,6 +59,10 @@ check_long_mode:
     test edx, 1 << 29   ;  if lm bit is set (1) long mode is available
     jz .no_long_mode
     ret
+
+.no_long_mode:
+    mov al, "C"
+    jmp error
 
 setup_page_tables:
     ; identity map physical add to virtual add
@@ -99,18 +111,8 @@ enable_paging:
 
     ret
 
-.no_multiboot:
-    mov al, "M"
-    jmp error
 
 
-.no_cpuid:
-    mov al, "C"
-    jmp error
-
-.no_long_mode:
-    mov al, "C"
-    jmp error
 
 error:
     ; subroutine to print "ERR: X" where X is the error code

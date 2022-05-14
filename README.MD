@@ -6,3 +6,5 @@ grub to build the iso
 stack to hold all function data
 64 bit
 c code to print stuff
+
+makefile phony targets
