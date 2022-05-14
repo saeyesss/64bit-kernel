@@ -1,4 +1,5 @@
 global start
+extern long_mode_start
 
 section .text
 bits 32
@@ -14,8 +15,9 @@ start:
     call setup_page_tables
     call enable_paging
 
-    ; print 'OK'
-    mov dword [0xb8000], 0x2f4b2f4f
+    lgdt [gdt64.pointer]
+    jmp gdt64.code_segment:long_mode_start  ; jump to 64 bit code
+
     hlt
 
 check_multiboot:
@@ -50,8 +52,6 @@ check_long_mode:
     jz .no_long_mode
     ret
 
-
-
 setup_page_tables:
     ; identity map physical add to virtual add
     mov eax, page_table_l3
@@ -75,8 +75,6 @@ setup_page_tables:
     jne .loop       ; if not loop again
 
     ret
-
-
 
 enable_paging:
     ; pass page table loc to cpu
@@ -137,3 +135,12 @@ stack_bottom:
     resb 4096 * 4
 
 stack_top:
+
+section .rodata
+gdt64:
+    dq 0 ; zero entry
+.code_segment: equ  $ - gdt64                         ; code segment offset
+    dq (1 << 43) | (1 << 44) | (1 << 47) | (1 << 53)  ; set executable flag, desc type, present flag and 64bit flag
+.pointer:
+    dw $ - gdt64 -1 ; length of table -1 = end  - start label - 1
+    dq gdt64    ; store the pointer to the table start with the label
