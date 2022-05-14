@@ -103,4 +103,3 @@ void print_set_color(uint8_t foreground, uint8_t background)
 {
     color = foreground + (background << 4); // 4+4 bits
 }
-© 2022 GitHub, Inc.
