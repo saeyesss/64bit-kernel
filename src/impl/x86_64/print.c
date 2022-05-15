@@ -70,7 +70,7 @@ void print_char(char character)
         return;
     }
 
-    if (col > NUM_COLS) // col>80
+    if (col >= NUM_COLS) // col>80
     {
         print_newline();
     }

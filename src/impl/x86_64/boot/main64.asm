@@ -4,7 +4,7 @@ extern kernel_main
 section  .text
 bits 64
 
-long_mode_start: ; set data segment registers to 0
+long_mode_start: ; reset data segment registers
     mov ax, 0
     mov ss, ax
     mov ds, ax
